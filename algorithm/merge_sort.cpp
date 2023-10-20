@@ -4,27 +4,41 @@
 
 using namespace std;
 
-void merge(vector<int> &v, int a1, int a2, int b1, int b2 ) {
-    int len = (a2 - a1) + (b2 - b1);
+void merge(vector<int> &v, int Begin, vector<int> a, vector<int> b) {
+    int len = a.size() + b.size();
 
     vector<int> tmp(len);
 
     int ap = 0, bp = 0;
     for ( int i = 0 ; i < len ; ++i ) {
-        tmp[i] = min(v[a1+ap], v[b1 + bp]);
-        if (v[a1+ap] < v[b1 + bp]  ) {
+        if ( ap == a.size() ) {
+            copy(b.begin()+bp, b.end(), tmp.begin()+i);
+            cout << i << "d: " << bp << endl;
+            break;
+        }
+        if ( bp == b.size() ) {
+            copy(a.begin()+ap, a.end(), tmp.begin()+i);
+            cout << "d: " << ap << endl;
+            break;
+        }
+            
+        tmp[i] = min(a[ap], b[bp]);
+        if (a[+ap] < b[bp]  ) {
             ++ap;
         } else {
             ++bp;
         }
     }
 
+    cout << "tmp = ";
+    for ( auto& e : tmp )
+        cout << e << " ";
+    cout << endl;
+
     for ( int i = 0 ; i < len ; ++i ) {
-        if ( i < len/2 )
-            v[a1 + i] = tmp[i];
-        else
-            v[b1 + i - len/2] = tmp[i];
+        v[Begin + i] = tmp[i];
     }
+
 }
 
 
@@ -37,28 +51,34 @@ void merge_sort(vector<int> &v, int Begin, int End) {
     // sort(v.begin() + Begin, v.begin()+End);
 
     int mid = (Begin + End)/2;
-    cout << "mid = " << mid << endl;
+    // cout << "mid = " << mid << endl;
+    /*
     for ( auto& e : v ) 
         cout << e << " ";
     cout << endl;
+    */
 
     if ( mid != Begin ) {
         merge_sort(v, Begin, mid);
         merge_sort(v, mid, End);
-        
-        merge(v, Begin, mid, mid, End);
-    }
-    else {
-        ;
-    }
 
-    ;
+        vector<int> a(v.begin() + Begin, v.begin() +mid),
+                    b(v.begin() + mid, v.begin() + End);
+        
+        merge(v, Begin, a, b);
+    }
 }
 
 int main() {
 
 
-    vector<int> a = {4, 1, 3, 5, 2, 8, 23, 10};
+    // vector<int> a = {4, 1, 3, 5, 2, 8, 23, 10};
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for ( auto& e : a )
+        cin >> e;
+    vector<int> backup = a;
 
     for ( auto & e : a ) {
         cout << e << " ";
@@ -72,6 +92,13 @@ int main() {
         cout << e << " ";
     }
     cout << endl;
+    cout << "std::sort" << endl;
+    sort(backup.begin(), backup.end());
+    for ( auto & e : backup ) {
+        cout << e << " ";
+    }
+    cout << endl;
+
 
     return 0;
 }
